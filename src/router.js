@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
+import MovieNews from './views/MovieNews.vue'
+import VipMovies from './views/VipMovies.vue'
+import MovieComments from './views/MovieComments.vue'
 
 Vue.use(Router)
 
@@ -14,12 +17,19 @@ export default new Router({
       component: Home
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
+      path: '/movie-news',
+      name: 'movie-news',
+      component: MovieNews
+    },
+    {
+      path: '/vip-movies',
+      name: 'vip-movies',
+      component: VipMovies
+    },
+    {
+      path: '/movie-comments',
+      name: 'movie-comments',
+      component: MovieComments
     }
   ]
 })
