@@ -4,12 +4,12 @@ import Home from './views/Home.vue'
 import MovieNews from './views/MovieNews.vue'
 import VipMovies from './views/VipMovies.vue'
 import MovieComments from './views/MovieComments.vue'
+import Login from './views/Login.vue'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   mode: 'history',
-  base: process.env.BASE_URL,
   routes: [
     {
       path: '/',
@@ -30,6 +30,13 @@ export default new Router({
       path: '/movie-comments',
       name: 'movie-comments',
       component: MovieComments
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: Login
     }
   ]
 })
+
+export default router;

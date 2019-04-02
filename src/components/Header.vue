@@ -1,5 +1,4 @@
 // 顶部导航栏
-import func from './vue-temp/vue-editor-bridge';
 <template>
     <div class="head">
         <div class="head-bar">
@@ -8,7 +7,7 @@ import func from './vue-temp/vue-editor-bridge';
                     <img src="../assets/img/电影.png" class="head-bar-img">
                     <span class="head-bar-txt">电影频道</span>
                 </a>
-                <a href="" title="爱电影网" class="head-bar-right">爱电影网</a>
+                <a href="#" title="爱电影网" class="head-bar-right">爱电影网</a>
             </div>
             <ul class="nav-bar-menu">
                 <li class="home-page nav-active">
@@ -48,11 +47,11 @@ import func from './vue-temp/vue-editor-bridge';
             <div class="nav-bar-user">
                 <div class="user-login" @mouseover="loginEnter" @mouseout="loginLeave">
                     <div class="user-login-reg">
-                        <a href="" target="_blank">
+                        <router-link to="/login">
                             <i class="i-profile"></i>
                             <br>
                             <span class="user-login-span">登录</span>
-                        </a>
+                        </router-link> 
                     </div>
                 </div>
             </div>
@@ -116,7 +115,7 @@ export default {
   padding: 8px 12.5px 0 12.5px;
 }
 .head-bar-txt {
-  color: #c2c2c3;
+  color: #c1c1c1;
   font-size: 12px;
   display: block;
   width: 60px;
@@ -131,7 +130,7 @@ export default {
   color: #009fe8;
   font-family: Helvetica, Arial, sans-serif;
   font-weight: 500;
-  margin-left: 30px;
+  margin-left: 25px;
 }
 .nav-bar-menu {
   margin: 0;
@@ -234,8 +233,7 @@ form{
     background: rgb(245, 245, 245);
 }
 .nav-bar-user{
-    font-size: 12px;
-    margin-left: 40px;
+    margin-left: 30px;
 }
 .user-login{
     height: 56px;
@@ -256,6 +254,7 @@ form{
     overflow: hidden;
 }
 .user-login-span{
+    font-size: 12px;
     color: #c1c1c1;
     display: block;
 }
