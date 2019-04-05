@@ -53,6 +53,9 @@
                             <span class="user-login-span">登录</span>
                         </router-link> 
                     </div>
+                    <div class="user-login-img" style="display: none">
+                        <img src="../assets/img/user-login-img.jpg" alt="">
+                    </div>
                 </div>
             </div>
         </div>
@@ -257,5 +260,11 @@ form{
     font-size: 12px;
     color: #c1c1c1;
     display: block;
+}
+.user-login-img img{
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    vertical-align: top;
 }
 </style>

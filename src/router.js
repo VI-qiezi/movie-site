@@ -34,7 +34,10 @@ const router = new Router({
     {
       path: '/login',
       name: 'login',
-      component: Login
+      component: Login,
+      meta: {
+        keepAlive: true
+      }
     }
   ]
 })
