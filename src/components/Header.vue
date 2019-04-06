@@ -53,8 +53,25 @@
                             <span class="user-login-span">登录</span>
                         </router-link> 
                     </div>
-                    <div class="user-login-img" style="display: none">
+                    <div class="user-login-img" style="display: none" @mouseover="userInfoEnter" @mouseout="userInfoLeave">
                         <img src="../assets/img/user-login-img.jpg" alt="">
+                    </div>
+                    <div class="user-login-plane" style="display: none" @mouseover="userInfoEnter" @mouseout="userInfoLeave">
+                        <i class="arrow-up login-plane-position"></i>
+                        <div class="login-plane clearfix">
+                            <div class="login-infoBox">
+                                <img src="../assets/img/user-login-img.jpg" alt="">
+                                <p class="infoBox-title">
+                                    <a href="#">{{userInfo.username}}</a>
+                                    <i class="i-crownGray"></i>
+                                </p>
+                                <p>立即开通VIP 大片随意看</p>
+                                <p>
+                                    <a href="#"><button type="button" class="login-renewal-btn">开通</button></a>
+                                </p>
+                            </div>
+                            <span class="loginOutBtn" @click="louout">退出</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -64,31 +81,106 @@
 
 <script>
 import "../assets/libs/jquery.min.js";
+import UserInfo from "../assets/libs/userInfo.js";
 export default {
   name: "Header",
-  methods:{
-      searchEnter: function(){
-          $(".nav-bar-search").css("background", "#fff");
-          $(".search-plane").css("display", "block");
-          $(".i-search").css("background-position", "-200px -150px");
-      },
-      searchleave: function(){
-          $(".nav-bar-search").css("background", "rgb(47, 51, 63)");
-          $(".search-plane").css("display", "none");
-      },
-      loginEnter: function(){
-          $(".i-profile").css("background-position", "-68px -189px");
-      },
-      loginLeave: function(){
-          $(".i-profile").css("background-position", "-68px -150px");
+  data() {
+    return {
+      isRemember: true,
+      userInfo: {
+        loginName: "",
+        loginPass: ""
       }
+    };
+  },
+  mounted() {
+    var vm = this;
+    UserInfo.$on("val", data => {
+      // console.log(data);
+      vm.userInfo = data;
+    });
+    vm.getCookie();
+  },
+  methods: {
+    searchEnter: function() {
+      $(".nav-bar-search").css("background", "#fff");
+      $(".search-plane").css("display", "block");
+      $(".i-search").css("background-position", "-200px -150px");
+    },
+    searchleave: function() {
+      $(".nav-bar-search").css("background", "rgb(47, 51, 63)");
+      $(".search-plane").css("display", "none");
+    },
+    loginEnter: function() {
+      $(".i-profile").css("background-position", "-68px -189px");
+    },
+    loginLeave: function() {
+      $(".i-profile").css("background-position", "-68px -150px");
+    },
+    userInfoEnter: function() {
+      $(".user-login-plane").css("display", "block");
+    },
+    userInfoLeave: function() {
+      $(".user-login-plane").css("display", "none");
+    },
+    louout: function() {
+      var vm = this;
+      this.axios
+        .get("/api/users/logout")
+        .then(function(res) {
+          if (res.data.code != 200) {
+            console.log("退出异常");
+          }
+          if (vm.isRemember == false) {
+            console.log("清空cookie");
+            vm.clearCookie();
+          }
+          vm.$router.push({ path: "/" });
+          $(".user-login-reg").css("display", "block");
+          $(".user-login-img").css("display", "none");
+          $(".user-login-plane").css("display", "none");
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
+    },
+    //读取cookie
+    getCookie: function() {
+      if (document.cookie.length > 0) {
+        var arr = document.cookie.split("; "); //这里显示的格式需要切割一下自己可输出看下
+        for (var i = 0; i < arr.length; i++) {
+          var arr2 = arr[i].split("="); //再次切割
+          //判断查找相对应的值
+          if (arr2[0] == "loginName") {
+            this.userInfo.loginName = arr2[1]; //保存到保存数据的地方
+          } else if (arr2[0] == "isRemember") {
+            this.isRemember = arr2[1];
+          }
+        }
+      }
+    },
+    //设置cookie
+    setCookie(c_name, c_pwd, exdays, isRemember) {
+      var exdate = new Date(); //获取时间
+      exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * exdays); //保存的天数
+      //字符串拼接cookie
+      window.document.cookie =
+        "loginName" + "=" + c_name + ";path=/;expires=" + exdate.toGMTString();
+      window.document.cookie =
+        "loginPass" + "=" + c_pwd + ";path=/;expires=" + exdate.toGMTString();
+      window.document.cookie = "isRemember" + "=" + isRemember + ";path=/;expires=" + exdate.toGMTString();
+    },
+    //清除cookie
+    clearCookie: function() {
+      this.setCookie("", "", -1, ""); //修改2值都为空，天数为负1天就好了
+    }
   }
 };
 </script>
 
 <style scoped>
 .head {
-  width: 1349px;
+  width: 1366px;
   min-width: 980px;
   height: 70px;
   background: #20232c;
@@ -99,14 +191,12 @@ export default {
   margin: 0 auto;
   display: flex;
   flex-direction: row;
-  /* border: 1px solid yellow; */
 }
 .head-bar-logo {
   width: 220px;
   height: 70px;
   display: flex;
   flex-direction: row;
-  /* border: 1px solid red; */
 }
 .head-bar-left {
   width: 60px;
@@ -139,7 +229,6 @@ export default {
   margin: 0;
   padding: 0;
   padding-left: 30px;
-  /* border: 1px solid black; */
 }
 .nav-bar-menu li {
   list-style: none;
@@ -155,116 +244,203 @@ export default {
   padding: 0px 31px;
   color: #bdbdbd;
 }
-.router-link-exact-active{
-    color: #fff !important;
-    font-size: 17px !important;
+.router-link-exact-active {
+  color: #fff !important;
+  font-size: 17px !important;
 }
-.nav-bar-search{
-    width: 180px;
-    height: 40px;
-    background: rgb(47, 51, 63);
-    margin-top: 15px;
-    border-radius: 20px;
-    position: relative;
-    margin-left: 20px;
+.nav-bar-search {
+  width: 180px;
+  height: 40px;
+  background: rgb(47, 51, 63);
+  margin-top: 15px;
+  border-radius: 20px;
+  position: relative;
+  margin-left: 20px;
 }
-.search-form{
-    padding: 10px 15px 10px 20px;
+.search-form {
+  padding: 10px 15px 10px 20px;
 }
-form{
-    display: block;
-    margin-top: 0em;
-    display: flex;
-    flex-direction: row;
+form {
+  display: block;
+  margin-top: 0em;
+  display: flex;
+  flex-direction: row;
 }
-.search-txt{
-    width: 80%;
-    color: #999;
-    background-color: transparent;
+.search-txt {
+  width: 80%;
+  color: #999;
+  background-color: transparent;
 }
-.search-txt, .search-btn, .search-chip{
-    font-size: 14px;
-    border: 0;
+.search-txt,
+.search-btn,
+.search-chip {
+  font-size: 14px;
+  border: 0;
 }
-.i-search{
-    width: 20px;
-    height: 20px;
-    background: url("../assets/img/homeico.png") no-repeat;
-    background-position: -170px -150px;
-    display: inline-block;
-    zoom: 1;
-    overflow: hidden;
+.i-search {
+  width: 20px;
+  height: 20px;
+  background: url("../assets/img/homeico.png") no-repeat;
+  background-position: -170px -150px;
+  display: inline-block;
+  zoom: 1;
+  overflow: hidden;
 }
-.search-chip{
-    width: 100%;
-    color: #999;
-    position: absolute;
-    top: 10px;
-    left: 20px;
-    z-index: 1;
-    display: block;
+.search-chip {
+  width: 100%;
+  color: #999;
+  position: absolute;
+  top: 10px;
+  left: 20px;
+  z-index: 1;
+  display: block;
 }
-.search-plane{
-    width: 180px;
-    position: absolute;
-    left: 0;
-    top: 35px;
-    z-index: 999;
-    padding-top: 8px;
+.search-plane {
+  width: 180px;
+  position: absolute;
+  left: 0;
+  top: 35px;
+  z-index: 999;
+  padding-top: 8px;
 }
-.search-plane ul{
-    background: #fff;
-    padding: 0px;
-    margin-top: 2px;
-    border-radius: 5px;
+.search-plane ul {
+  background: #fff;
+  padding: 0px;
+  margin-top: 2px;
+  border-radius: 5px;
 }
-.search-plane ul li{
-    height: 40px;
-    line-height: 40px;
-    list-style: none;
-    padding-left: 18px;
-    background: #fff;
-    border-radius: 5px;
-    margin: 0;
+.search-plane ul li {
+  height: 40px;
+  line-height: 40px;
+  list-style: none;
+  padding-left: 18px;
+  background: #fff;
+  border-radius: 5px;
+  margin: 0;
 }
-.search-plane ul li a:link, .search-plane ul li a:visited, .search-plane ul li a:hover{
-    font-size: 14px;
-    color: #666;
-    display: block;
+.search-plane ul li a:link,
+.search-plane ul li a:visited,
+.search-plane ul li a:hover {
+  font-size: 14px;
+  color: #666;
+  display: block;
 }
-.search-plane ul li:hover{
-    background: rgb(245, 245, 245);
+.search-plane ul li:hover {
+  background: rgb(245, 245, 245);
 }
-.nav-bar-user{
-    margin-left: 30px;
+.nav-bar-user {
+  font-size: 12px;
+  margin-left: 51px;
+  position: relative;
 }
-.user-login{
-    height: 56px;
-    padding-left: 20px;
-    padding-top: 14px;
-    display: inline-block;
-    position: relative;
-    text-align: center;
-    cursor: pointer;
+.user-login {
+  height: 56px;
+  padding-left: 20px;
+  padding-top: 14px;
+  display: inline-block;
+  position: relative;
+  text-align: center;
+  cursor: pointer;
 }
-.i-profile{
-    width: 21px;
-    height: 23px;
-    background: url("../assets/img/homeico.png") no-repeat;
-    background-position: -68px -150px;
-    display: inline-block;
-    zoom: 1;
-    overflow: hidden;
+.i-profile {
+  width: 21px;
+  height: 23px;
+  background: url("../assets/img/homeico.png") no-repeat;
+  background-position: -68px -150px;
+  display: inline-block;
+  zoom: 1;
+  overflow: hidden;
 }
-.user-login-span{
-    font-size: 12px;
-    color: #c1c1c1;
-    display: block;
+.user-login-span {
+  font-size: 12px;
+  color: #c1c1c1;
+  display: block;
 }
-.user-login-img img{
-    width: 40px;
-    height: 40px;
-    border-radius: 20px;
-    vertical-align: top;
+.user-login-img {
+  width: 40px;
+  height: 56px;
+}
+.user-login-img img {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  vertical-align: top;
+}
+.user-login-plane {
+  width: 260px;
+  height: 148px;
+  background: #fff;
+  position: absolute;
+  right: 0;
+  top: 70px;
+  z-index: 999;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+  cursor: auto;
+  border-radius: 5px;
+}
+.login-plane-position {
+  position: absolute;
+  top: -5px;
+  right: 10px;
+}
+.arrow-up {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid #ffffff;
+}
+.login-infoBox {
+  margin-left: 20px;
+  margin-top: 20px;
+  color: #9d846d;
+}
+.login-infoBox img {
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  margin-right: 10px;
+  float: left;
+}
+.login-infoBox p {
+  text-align: left;
+  margin: 8px 0;
+}
+.infoBox-title a {
+  font-size: 15px;
+  color: #666;
+}
+.i-crownGray {
+  width: 20px;
+  height: 18px;
+  margin-left: 7px;
+  background: url("../assets/img/homeico.png") no-repeat;
+  background-position: -130px -170px;
+  display: inline-block;
+  zoom: 1;
+  overflow: hidden;
+}
+.login-renewal-btn {
+  width: 45px;
+  line-height: 20px;
+  border: none;
+  color: #fff;
+  background: #ffc200;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.login-renewal-btn:hover {
+  background: #ffae00;
+}
+.loginOutBtn {
+  float: right;
+  margin-top: 10px;
+  margin-right: 17px;
+  color: #999999;
+  cursor: pointer;
+}
+.loginOutBtn:hover {
+  color: #20232c;
 }
 </style>

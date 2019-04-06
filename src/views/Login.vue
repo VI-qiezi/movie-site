@@ -22,10 +22,10 @@
                                 <span class="error-text"></span>
                             </li>
                             <li class="normal">
-                                <input type="text" name="username" class="input  username" id="login-name" placeholder="请输入账号" autocomplete="off" :class="{'focus-input': focusUsername}" @focus="focusUsername=true" @blur="focusUsername=false">
+                                <input type="text" name="username" class="input  username" id="login-name" placeholder="请输入账号" v-model="userInfo.username" autocomplete="off" :class="{'focus-input': focusUsername}" @focus="focusUsername=true" @blur="focusUsername=false">
                             </li>
                             <li class="normal passwordBox">
-                                <input type="password" name="password" class="input password original" id="login-pass" placeholder="请输入密码" :class="{'focus-input': focusPassword}" @focus="focusPassword=true" @blur="focusPassword=false">
+                                <input type="password" name="password" class="input password original" id="login-pass" placeholder="请输入密码" v-model="userInfo.password" :class="{'focus-input': focusPassword}" @focus="focusPassword=true" @blur="focusPassword=false">
                             </li>
                             <li>
                                 <input type="button" name="btn-login" class="submit" value="登    录" @click="toLogin">
@@ -49,10 +49,10 @@
                                     <span class="error-text"></span>
                                 </li>
                                 <li class="normal">
-                                    <input type="text" name="regname" class="input  regname" id="reg-name" placeholder="由英文字母开头的3-15个字母、数字组合" autocomplete="off" :class="{'focus-input': focusRegname}" @focus="focusRegname=true" @blur="focusRegname=false">
+                                    <input type="text" name="regname" class="input  regname" id="reg-name" placeholder="用户名由英文字母开头的3-15个字母、数字组成" autocomplete="off" :class="{'focus-input': focusRegname}" @focus="focusRegname=true" @blur="focusRegname=false">
                                 </li>
                                 <li class="normal">
-                                    <input type="password" name="password" class="input password" id="reg-pass" placeholder="6-18个字符，由英文字母和数字组成" :class="{'focus-input': focusRegPassword}" @focus="focusRegPassword=true" @blur="focusRegPassword=false">
+                                    <input type="password" name="password" class="input password" id="reg-pass" placeholder="密码由英文字母和数字组成的6-18个字符" :class="{'focus-input': focusRegPassword}" @focus="focusRegPassword=true" @blur="focusRegPassword=false">
                                 </li>
                                 <li class="normal accept">
                                     <span class="agreement">
@@ -78,6 +78,8 @@
 </template>
 
 <script>
+import "../assets/libs/jquery.min.js";
+import UserInfo from "../assets/libs/userInfo.js";
 export default {
   name: "Login",
   data() {
@@ -85,8 +87,15 @@ export default {
       focusUsername: false,
       focusPassword: false,
       focusRegname: false,
-      focusRegPassword: false
+      focusRegPassword: false,
+      userInfo: {
+        loginName: "",
+        loginPass: ""
+      }
     };
+  },
+  mounted() {
+    this.getCookie();
   },
   methods: {
     clickLogin: function() {
@@ -110,96 +119,132 @@ export default {
       var vm = this;
       var regName = $.trim($("#reg-name").val());
       var regPass = $.trim($("#reg-pass").val());
-      var isAgree = $('.agree').prop('checked');
-
-      var exName=/^[a-zA-Z][a-zA-Z0-9]{3,15}$/;  
+      var isAgree = $(".agree").prop("checked");
+      var exName = /^[a-zA-Z][a-zA-Z0-9]{3,15}$/;
       var exPass = /^[0-9a-zA-Z.,;'/]{6,18}$/;
 
-      if(!regName || !regPass){
+      if (!regName || !regPass) {
         $(".registerBox .error").css("visibility", "visible");
-        $(".error-text").text('账号或密码不能为空');
-        return;
-      } 
-      if(!exName.test(regName)){
-        $(".registerBox .error").css("visibility", "visible");
-        $(".error-text").text('请输入正确的用户名');
+        $(".error-text").text("账号或密码不能为空");
         return;
       }
-      if(!exPass.test(regPass)){
+      if (!isAgree) {
         $(".registerBox .error").css("visibility", "visible");
-        $(".error-text").text('密码不能含有非法字符，长度在6-18之间');
+        $(".error-text").text("同意协议后才能注册");
         return;
       }
-      if(isAgree != true){
+      if (!exName.test(regName)) {
         $(".registerBox .error").css("visibility", "visible");
-        $(".error-text").text('同意协议后才能注册');
+        $(".error-text").text("请输入正确的用户名");
         return;
       }
+      if (!exPass.test(regPass)) {
+        $(".registerBox .error").css("visibility", "visible");
+        $(".error-text").text("密码不能含有非法字符，长度在6-18之间");
+        return;
+      }
+
       this.axios
-      .get("/api/users/register", {
-        params: {
-          regName: regName, 
-          regPass: regPass,
-          isAgree: isAgree
-        }
-      }).then(function(res){
-        if(res.data.code != 200){
-          $(".registerBox .error").css("visibility", "visible");
-          $(".error-text").text(res.data.message);
-          return;
-        }
-        vm.$router.push({path: '/'});
-        $(".user-login-reg").css("display", "none");
-        $(".user-login-img").css("display", "block");
-      }).catch(function(err){
-        console.log(err);
-      })
+        .get("/api/users/register", {
+          params: {
+            regName: regName,
+            regPass: regPass
+          }
+        })
+        .then(function(res) {
+          if (res.data.code != 200) {
+            $(".registerBox .error").css("visibility", "visible");
+            $(".error-text").text(res.data.message);
+            return;
+          }
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
     },
-    toLogin: function(e){
+    toLogin: function(e) {
       e.preventDefault();
       var vm = this;
       var loginName = $.trim($("#login-name").val());
       var loginPass = $.trim($("#login-pass").val());
       var isRemember = $("#rememberme").prop("checked");
-      
-      var exName=/^[a-zA-Z][a-zA-Z0-9]{3,15}$/;  
+
+      var exName = /^[a-zA-Z][a-zA-Z0-9]{3,15}$/;
       var exPass = /^[0-9a-zA-Z.,;'/]{6,18}$/;
-      
-      if(!loginName || !loginPass){
+
+      if (!loginName || !loginPass) {
         $(".loginBox .error").css("visibility", "visible");
-        $(".error-text").text('账号或密码不能为空');
+        $(".error-text").text("账号或密码不能为空");
         return;
       }
-      if(!exName.test(loginName)){
+      if (!exName.test(loginName)) {
         $(".loginBox .error").css("visibility", "visible");
-        $(".error-text").text('请输入正确的用户名');
+        $(".error-text").text("请输入正确的用户名");
         return;
       }
-      if(!exPass.test(loginPass)){
+      if (!exPass.test(loginPass)) {
         $(".loginBox .error").css("visibility", "visible");
-        $(".error-text").text('密码不能含有非法字符，长度在6-18之间');
+        $(".error-text").text("密码不能含有非法字符，长度在6-18之间");
         return;
       }
-      
+      if (isRemember == true) {
+        this.setCookie(loginName, loginPass, 7, isRemember);
+      }
       this.axios
-      .get("/api/users/login", {
-        params: {
-          loginName: loginName, 
-          loginPass: loginPass,
-          isRemember: isRemember
+        .get("/api/users/login", {
+          params: {
+            loginName: loginName,
+            loginPass: loginPass,
+            isRemember: isRemember
+          }
+        })
+        .then(function(res) {
+          if (res.data.code != 200) {
+            $(".loginBox .error").css("visibility", "visible");
+            $(".error-text").text(res.data.message);
+            return;
+          }
+
+          vm.$router.push({ path: "/" });
+          $(".user-login-reg").css("display", "none");
+          $(".user-login-img").css("display", "block");
+
+          vm.userInfo = res.data.userInfo;
+          UserInfo.$emit("val", vm.userInfo);
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
+    },
+    //设置cookie
+    setCookie(c_name, c_pwd, exdays, isRemember) {
+      var exdate = new Date(); //获取时间
+      exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * exdays); //保存的天数
+      //字符串拼接cookie
+      window.document.cookie =
+        "loginName" + "=" + c_name + ";path=/;expires=" + exdate.toGMTString();
+      window.document.cookie =
+        "loginPass" + "=" + c_pwd + ";path=/;expires=" + exdate.toGMTString();
+      window.document.cookie = "isRemember" + "=" + isRemember + ";path=/;expires=" + exdate.toGMTString();
+    },
+    //读取cookie
+    getCookie: function() {
+      if (document.cookie.length > 0) {
+        var arr = document.cookie.split("; "); //这里显示的格式需要切割一下自己可输出看下
+        for (var i = 0; i < arr.length; i++) {
+          var arr2 = arr[i].split("="); //再次切割
+          //判断查找相对应的值
+          if (arr2[0] == "loginName") {
+            this.userInfo.loginName = arr2[1]; //保存到保存数据的地方
+          } else if (arr2[0] == "loginPass") {
+            this.userInfo.loginPass = arr2[1];
+          }
         }
-      }).then(function(res){
-        if(res.data.code != 200){
-          $(".loginBox .error").css("visibility", "visible");
-          $(".error-text").text(res.data.message);
-          return;
-        }
-        vm.$router.push({path: '/'});
-        $(".user-login-reg").css("display", "none");
-        $(".user-login-img").css("display", "block");
-      }).catch(function(err){
-        console.log(err);
-      })
+      }
+    },
+    //清除cookie
+    clearCookie: function() {
+      this.setCookie("", "", -1); //修改2值都为空，天数为负1天就好了
     }
   }
 };
@@ -308,9 +353,9 @@ export default {
   display: inline-block;
   vertical-align: middle;
 }
-#reg-text{
-    width: 200px;
-    text-align: left;
+#reg-text {
+  width: 200px;
+  text-align: left;
 }
 .passContent ul li {
   width: 330px;

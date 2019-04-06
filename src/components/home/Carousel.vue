@@ -80,6 +80,7 @@ export default {
   height: 322px;
   padding-top: 18px;
   border: 0;
+  margin: 0 auto;
 }
 </style>
 </style>
