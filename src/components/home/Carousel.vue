@@ -37,8 +37,8 @@
             <!-- Add Pagination -->
             <div class="swiper-pagination" style="z-index: 10;"></div>
             <!-- Add Arrows -->
-            <div class="swiper-button-next" style="z-index: 10;"></div>
-            <div class="swiper-button-prev" style="z-index: 10;"></div>
+            <div class="swiper-button-next swiper-button-white" style="z-index: 10;"></div>
+            <div class="swiper-button-prev swiper-button-white" style="z-index: 10;"></div>
         </div>
     </div>
 </template>

@@ -10,7 +10,7 @@
                 <a href="#" title="爱电影网" class="head-bar-right">爱电影网</a>
             </div>
             <ul class="nav-bar-menu">
-                <li class="home-page nav-active">
+                <li class="home-page">
                     <router-link to="/">首页</router-link>
                 </li>
                 <li class="movie-news">
@@ -20,7 +20,7 @@
                     <router-link to="/vip-movies">VIP影院</router-link>
                 </li>
                 <li class="movie-comments">
-                    <router-link to="/movie-comments">影评</router-link>
+                    <router-link to="/movie-comments/popular-comments">影评</router-link>
                 </li>
             </ul>
             <div class="nav-bar-search">
@@ -65,9 +65,9 @@
                                     <a href="#">{{userInfo.username}}</a>
                                     <i class="i-crownGray"></i>
                                 </p>
-                                <p>立即开通VIP 大片随意看</p>
+                                <p>{{userInfo.intro}}</p>
                                 <p>
-                                    <a href="#"><button type="button" class="login-renewal-btn">开通</button></a>
+                                    <a href="#"><button type="button" class="edit-btn">去编辑</button></a>
                                 </p>
                             </div>
                             <span class="loginOutBtn" @click="louout">退出</span>
@@ -100,6 +100,7 @@ export default {
       vm.userInfo = data;
     });
     vm.getCookie();
+    // window.addEventListener("scroll", this.onScroll);
   },
   methods: {
     searchEnter: function() {
@@ -122,6 +123,14 @@ export default {
     },
     userInfoLeave: function() {
       $(".user-login-plane").css("display", "none");
+    },
+    onScroll() {
+      var top = $(document).scrollTop();
+      if (top >= 70) {
+        $(".head").addClass("menu-fix-top");
+      } else {
+        $(".head").removeClass("menu-fix-top");
+      }
     },
     louout: function() {
       var vm = this;
@@ -180,17 +189,18 @@ export default {
 
 <style scoped>
 .head {
-  width: 1366px;
+  width: 1349px;
   min-width: 980px;
   height: 70px;
   background: #20232c;
-  position: relative;
+  position: static;
 }
 .head-bar {
   width: 980px;
   margin: 0 auto;
   display: flex;
   flex-direction: row;
+  /* border: 1px solid yellow; */
 }
 .head-bar-logo {
   width: 220px;
@@ -226,9 +236,10 @@ export default {
   margin-left: 25px;
 }
 .nav-bar-menu {
+  width: 450px;
   margin: 0;
   padding: 0;
-  padding-left: 30px;
+  padding-left: 13px;
 }
 .nav-bar-menu li {
   list-style: none;
@@ -245,6 +256,10 @@ export default {
   color: #bdbdbd;
 }
 .router-link-exact-active {
+  color: #fff !important;
+  font-size: 17px !important;
+}
+.nav-active a{
   color: #fff !important;
   font-size: 17px !important;
 }
@@ -420,8 +435,8 @@ form {
   zoom: 1;
   overflow: hidden;
 }
-.login-renewal-btn {
-  width: 45px;
+.edit-btn {
+  width: 60px;
   line-height: 20px;
   border: none;
   color: #fff;
@@ -430,7 +445,7 @@ form {
   font-size: 14px;
   cursor: pointer;
 }
-.login-renewal-btn:hover {
+.edit-btn:hover {
   background: #ffae00;
 }
 .loginOutBtn {
@@ -442,5 +457,11 @@ form {
 }
 .loginOutBtn:hover {
   color: #20232c;
+}
+.menu-fix-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1100;
 }
 </style>

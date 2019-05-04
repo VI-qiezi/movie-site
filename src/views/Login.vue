@@ -1,6 +1,13 @@
 <template>
     <div class="login">
         <div class="head-logo">
+            <div class="head-bar-logo">
+              <a href="/" title="电影频道" class="head-bar-left">
+                  <img src="../assets/img/电影.png" class="head-bar-img">
+                  <span class="head-bar-txt">电影频道</span>
+              </a>
+              <a href="/" title="爱电影网" class="head-bar-right">爱电影网</a>
+            </div>
             <h1>
                 <span class="nav-header active">登录</span>
                 <span class="nav-header">注册</span>
@@ -74,6 +81,30 @@
                 </div>
             </div>
         </div>
+        <!-- <div class="footer">
+            <div class="navBox">
+                <a href="" target="_blank">关于我们</a>
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                <a href="" target="_blank">版权声明</a>
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                <a href="" target="_blank">帮助中心</a>
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                <a href="" target="_blank">联系我们</a>
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                <a href="" target="_blank">友情链接</a>
+                <div class="footer-bottom">
+                    <span>网络视听许可证</span>
+                    <span>出版物经营许可证</span>
+                    <span>电影发行许可证</span>
+                    <span>经营性演出许可证</span>
+                </div>
+                <div class="copyRight">
+                    <span>CopyRight © 2019</span>
+                    国家广播电影电视总局电影卫星频道节目制作中心 版权所有
+                </div>
+            </div>
+        </div> -->
+        
     </div>
 </template>
 
@@ -93,6 +124,10 @@ export default {
         loginPass: ""
       }
     };
+  },
+  created() {
+    this.$emit("public_header", false);
+    this.$emit("public_footer", false);
   },
   mounted() {
     this.getCookie();
@@ -157,6 +192,7 @@ export default {
             $(".error-text").text(res.data.message);
             return;
           }
+          alert("注册成功，请登录！");
         })
         .catch(function(err) {
           console.log(err);
@@ -225,7 +261,12 @@ export default {
         "loginName" + "=" + c_name + ";path=/;expires=" + exdate.toGMTString();
       window.document.cookie =
         "loginPass" + "=" + c_pwd + ";path=/;expires=" + exdate.toGMTString();
-      window.document.cookie = "isRemember" + "=" + isRemember + ";path=/;expires=" + exdate.toGMTString();
+      window.document.cookie =
+        "isRemember" +
+        "=" +
+        isRemember +
+        ";path=/;expires=" +
+        exdate.toGMTString();
     },
     //读取cookie
     getCookie: function() {
@@ -262,7 +303,44 @@ export default {
   height: 52px;
   margin: 0 auto;
   padding-top: 22px;
+  display: flex;
+  flex-direction: row;
+  /* border: 1px solid black; */
+}
+.head-bar-logo {
+  width: 220px;
+  height: 70px;
+  margin-top: -18px;
+  display: flex;
+  flex-direction: row;
   /* border: 1px solid red; */
+}
+.head-bar-left {
+  width: 60px;
+  height: 70px;
+}
+.head-bar-img {
+  width: 35px;
+  height: 35px;
+  padding: 8px 12.5px 0 12.5px;
+}
+.head-bar-txt {
+  color: #c1c1c1;
+  font-size: 12px;
+  display: block;
+  width: 60px;
+  text-align: center;
+  margin-top: -5px;
+  font-family: "幼圆";
+}
+.head-bar-right {
+  height: 70px;
+  line-height: 70px;
+  font-size: 32px;
+  color: #009fe8;
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight: 500;
+  margin-left: 25px;
 }
 .nav-header {
   color: #9498a1;
@@ -438,5 +516,42 @@ input[type="password"] {
 }
 .reg-submit {
   margin-top: -10px;
+}
+.footer{
+  min-width: 980px;
+  background-color: rgb(243, 243, 243);
+  text-align: center;
+}
+.footer .navBox {
+  line-height: 24px;
+  padding: 22px 0 44px;
+  position: relative;
+  top: -4px;
+  margin-bottom: -4px;
+}
+.navBox a {
+  font-size: 13px;
+  color: #333333;
+}
+.navBox a:hover {
+  text-decoration: underline;
+}
+.navBox .footer-bottom {
+  width: 429px;
+  margin: 0 auto;
+}
+.footer-bottom span {
+  font: 12px/28px "Microsoft Yahei";
+  color: #474747;
+  margin-right: 23px;
+}
+.navBox .copyRight {
+  color: #474747;
+  font: 12px/28px "Microsoft Yahei";
+}
+.navBox .copyRight span {
+  color: #4794d8;
+  margin-right: 13px;
+  font-family: "Arial";
 }
 </style>

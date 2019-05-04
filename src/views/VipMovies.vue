@@ -1,12 +1,16 @@
 <template>
     <div class="vip-movies">
-        VIP影院
+        <myVideo></myVideo>
     </div>
 </template>
 
 <script>
+import myVideo from "../components/myVideo.vue"
 export default {
-    name: 'VipMovies'
+    name: 'VipMovies',
+    components: {
+        myVideo
+    }
 }
 </script>
 
